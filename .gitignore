@@ -25,3 +25,10 @@ resolved_dependencies
 
 # key
 *.pem
+
+
+# gtest
+gtest
+
+# vscode
+.vscode
