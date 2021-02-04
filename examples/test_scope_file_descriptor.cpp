@@ -1,4 +1,5 @@
-// Copyright (c) 2021 cppnetwork
+// Copyright (c) 2021-present cppnetwork
+// Copyright (c) 2021-present James Marjun Jallorinana
 // All Rights Reserved
 //
 // Distributed under the "MIT License". See the accompanying LICENSE.rst file.
@@ -14,9 +15,11 @@
 int main()
 {
     using krypto::unique_socket;
+    using krypto::make_unique_socket;
     unique_socket u_socket;
 
-    unique_socket u_socket_temp = socket(AF_INET, SOCK_STREAM, 0);
+    //unique_socket u_socket_temp = unique_socket(::socket(AF_INET, SOCK_STREAM, 0));
+    unique_socket u_socket_temp = make_unique_socket(::socket(AF_INET, SOCK_STREAM, 0));
 
     // assert default constructor value
     assert(u_socket.native_handle() == -1);
@@ -43,6 +46,10 @@ int main()
         std::cout << "u_socket is valid" << std::endl;
     if(!u_socket_move)
         std::cout << "u_socket_move is not valid" << std::endl;
+
+    // test close
+    u_socket.release();
+    assert(u_socket.valid() == false);
 
     std::cout << "Test Cases Passed!!!" << std::endl;
     return 0;
