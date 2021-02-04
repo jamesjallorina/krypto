@@ -1,14 +1,16 @@
-// Copyright (c) 2021 cppnetwork
+// Copyright (c) 2021-present cppnetwork
+// Copyright (c) 2021-present James Marjun Jallorinana
 // All Rights Reserved
 //
 // Distributed under the "MIT License". See the accompanying LICENSE.rst file.
 
 #pragma once
 
-#include <unistd.h>
-#include <utility>
-
 #include <krypto/common.hpp>
+
+#include <unistd.h>
+#include <cassert>
+#include <utility>
 
 namespace krypto
 {
@@ -21,10 +23,10 @@ public:
     scope_file_descriptor() KRYPTO_NOEXCEPT : 
         m_file_descriptor(-1) {}
     
-    scope_file_descriptor(int file_descriptor) :
+    explicit scope_file_descriptor(int file_descriptor) :
         m_file_descriptor(file_descriptor)
     {
-        if(m_file_descriptor == -1)
+        if(file_descriptor == -1)
             throw krypto_ex("invalid file descriptor");
     }
     
@@ -59,6 +61,15 @@ public:
         return (m_file_descriptor != -1);
     }
 
+    void release() KRYPTO_NOEXCEPT
+    {
+        if(m_file_descriptor != -1)
+        {
+            ::close(m_file_descriptor);
+            m_file_descriptor = -1;
+        }
+    }
+
     explicit operator bool() const KRYPTO_NOEXCEPT
     {
         return (m_file_descriptor != -1);
@@ -73,5 +84,13 @@ private:
 
 };
 } // namespace detail
+
+using unique_socket = detail::scope_file_descriptor;
+
+template <class...Ts>
+unique_socket make_unique_socket(Ts&&...ts)
+{
+    return unique_socket(std::forward<Ts>(ts)...);
+}
 
 } // namespace krypto

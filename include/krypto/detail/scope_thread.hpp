@@ -1,4 +1,5 @@
-// Copyright (c) 2021 cppnetwork
+// Copyright (c) 2021-present cppnetwork
+// Copyright (c) 2021-present James Marjun Jallorina
 // All Rights Reserved
 //
 // Distributed under the "MIT License". See the accompanying LICENSE.rst file.
@@ -30,7 +31,7 @@ public:
     {}
 
     template <class ...Args>
-    explicit scoped_thread(Args&&...args)
+    scoped_thread(Args&&...args)
     {
         m_thread_impl = 
             thread_type(std::forward<Args>(args)...);
@@ -98,5 +99,7 @@ private:
 };
 
 }   // namespace detail
+
+using unique_thread = detail::scoped_thread<std::thread>;
 
 }   // namespace krypto

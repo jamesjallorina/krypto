@@ -1,4 +1,5 @@
-// Copyright (c) 2021 cppnetwork
+// Copyright (c) 2021-present cppnetwork
+// Copyright (c) 2021-present James Marjun Jallorina
 // All Rights Reserved
 //
 // Distributed under the "MIT License". See the accompanying LICENSE.rst file.
