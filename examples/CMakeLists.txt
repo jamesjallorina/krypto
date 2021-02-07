@@ -20,3 +20,6 @@ TARGET_LINK_LIBRARIES(test_scope_thread -lpthread)
 
 add_executable(test_scope_thread_native_handle test_scope_thread_native_handle.cpp)
 TARGET_LINK_LIBRARIES(test_scope_thread_native_handle -lpthread)
+
+add_executable(test_tcp_server test_tcp_server.cpp)
+add_executable(test_tcp_client test_tcp_client.cpp)
