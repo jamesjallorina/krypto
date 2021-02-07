@@ -27,7 +27,7 @@ public:
         m_file_descriptor(file_descriptor)
     {
         if(file_descriptor == -1)
-            throw krypto_ex("invalid file descriptor");
+            throw_krypto_ex("invalid file descriptor");
     }
     
     scope_file_descriptor(scope_file_descriptor &&other) KRYPTO_NOEXCEPT
