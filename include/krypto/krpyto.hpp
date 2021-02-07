@@ -9,6 +9,8 @@
 
 #include <krypto/detail/scope_file_descriptor.hpp>
 #include <krypto/detail/scope_thread.hpp>
+#include <krypto/detail/tcp_client.hpp>
+#include <krypto/detail/tcp_server.hpp>
 
 namespace krypto
 {

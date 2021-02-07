@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <krypto/fmt/fmt.hpp>
+
 #include <string>
 #include <chrono>
 #include <exception>
@@ -36,14 +38,8 @@ namespace krypto
 {
 
 using log_clock = std::chrono::system_clock;
-
-namespace detail
-{
-namespace os
-{
-std::string errno_str(int err_num);
-}   // namespace os
-}   // namespace detail
+using ustring = std::basic_string<unsigned char>;
+using memory_buf_t = fmt::basic_memory_buffer<char, 250>;
 
 class krypto_ex : public std::exception
 {
@@ -52,7 +48,9 @@ public:
     {}
     krypto_ex(const std::string &msg, int last_errno)
     {
-        m_msg = msg + ": " + detail::os::errno_str(last_errno);
+        memory_buf_t outbuf;
+        fmt::format_system_error(outbuf, last_errno, msg);
+        m_msg = fmt::to_string(outbuf);
     }
     const char *what() const KRYPTO_NOEXCEPT override
     {
@@ -64,5 +62,15 @@ private:
 };
 
 using filename_t = std::string;
+
+KRYPTO_INLINE void throw_krypto_ex(std::string msg)
+{
+    KRYPTO_THROW(krypto_ex(std::move(msg)));
+}
+
+KRYPTO_INLINE void throw_krypto_ex(std::string const &msg, int last_errno)
+{
+    KRYPTO_THROW(krypto_ex(msg, last_errno));
+}
 
 }   // namespace krypto
