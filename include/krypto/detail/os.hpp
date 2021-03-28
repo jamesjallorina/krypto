@@ -1,5 +1,6 @@
 // Copyright (c) 2021-present cppnetwork
 // Copyright (c) 2021-present James Marjun Jallorina
+// Copyright(c) 2015-present, Gabi Melman & spdlog contributors.
 // All Rights Reserved
 //
 // Distributed under the "MIT License". See the accompanying LICENSE.rst file.
@@ -45,7 +46,6 @@ inline std::tm localtime()
     std::time_t now_t = time(nullptr);
     return localtime(now_t);
 }
-
 
 inline std::tm gmtime(const std::time_t &time_tt)
 {
