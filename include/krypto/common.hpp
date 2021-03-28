@@ -38,15 +38,30 @@ namespace krypto
 {
 
 using log_clock = std::chrono::system_clock;
-using ustring = std::basic_string<unsigned char>;
 using memory_buf_t = fmt::basic_memory_buffer<char, 250>;
+
+// SFINAE use cases
+template <typename ...Ts>
+using void_t = void;
+
+template <typename T> struct is_char : std::false_type {};
+template <> struct is_char<char> : std::true_type {};
+template <> struct is_char<char16_t> : std::true_type {};
+template <> struct is_char<char32_t> : std::true_type {};
+
+
+// Detection idiom for valid socket buffer
+template <typename T> struct is_valid_buffer : std::false_type {};
+template <> struct is_valid_buffer<char> : std::true_type  {};
+template <> struct is_valid_buffer<uint8_t> : std::true_type {};
+
 
 class krypto_ex : public std::exception
 {
 public:
     explicit krypto_ex(const std::string &msg) : m_msg(msg)
     {}
-    krypto_ex(const std::string &msg, int last_errno)
+    krypto_ex(const std::string &msg, int last_errno) 
     {
         memory_buf_t outbuf;
         fmt::format_system_error(outbuf, last_errno, msg);
