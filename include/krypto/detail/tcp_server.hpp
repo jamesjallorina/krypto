@@ -19,10 +19,16 @@ namespace detail
 class tcp_server
 {
 public:
+     tcp_server() = default;
 
-    bool is_listening()
+    bool is_listening() const
     {
         return server_listening;
+    }
+
+    int fd() const
+    {
+        return m_socket.native_handle();
     }
 
     void create_listener(std::string const &port, const int no_of_connections)
@@ -94,6 +100,11 @@ public:
         return ::accept(m_socket.native_handle(), (struct sockaddr *)&their_addr, &sin_size);
     }
 
+    int accept_connections()
+    {
+        return ::accept(m_socket.native_handle(), nullptr, nullptr);
+    }
+
     int set_socket_operations(int level, int option_name)
     {
         int enable_flag = 1;
@@ -102,6 +113,9 @@ public:
 
     ~tcp_server() = default;
 
+private:
+    tcp_server(tcp_server const & rhs) = delete;
+    tcp_server &operator=(tcp_server const & rhs) = delete;
 
 private:
     unique_socket m_socket;

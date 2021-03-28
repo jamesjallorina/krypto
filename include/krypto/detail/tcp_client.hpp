@@ -21,6 +21,7 @@ class tcp_client
 {
 
 public:
+    tcp_client() = default;
 
     bool is_connected() const
     {
@@ -113,6 +114,9 @@ public:
     }
 
     ~tcp_client() = default;
+private:
+    tcp_client(tcp_client const &rhs) = delete;
+    tcp_client &operator=(tcp_client const &rhs) = delete;
 
 private:
     unique_socket m_socket;
