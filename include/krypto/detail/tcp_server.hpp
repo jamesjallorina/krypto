@@ -16,6 +16,7 @@ namespace krypto
 namespace detail
 {
 
+template <protocol proto = PF_INET>
 class tcp_server
 {
 public:
@@ -31,6 +32,12 @@ public:
         return m_socket.native_handle();
     }
 
+    void create_listener(const int port, const int no_of_connections)
+    {
+        std::string portnum = std::to_string(port);
+        create_listener(portnum, no_of_connections);
+    }
+
     void create_listener(std::string const &port, const int no_of_connections)
     {
         struct addrinfo hints;
@@ -40,7 +47,7 @@ public:
         int result = 0;
 
         memset(&hints, 0, sizeof hints);
-        hints.ai_family = AF_INET;
+        hints.ai_family = static_cast<int>(proto);
         hints.ai_socktype = SOCK_STREAM;
         hints.ai_flags = AI_PASSIVE;
 
@@ -124,6 +131,6 @@ private:
 
 }   // namespace detail
 
-using tcp_server = detail::tcp_server;
+using tcp_server = detail::tcp_server<>;
 
 }   // namespace krypto
