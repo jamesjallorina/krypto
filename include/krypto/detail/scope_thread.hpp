@@ -37,9 +37,11 @@ public:
             thread_type(std::forward<Args>(args)...);
     }
 
-    scoped_thread(scoped_thread && other) KRYPTO_NOEXCEPT :
-        m_thread_impl(std::move(other.m_thread_impl))
-    {}
+    scoped_thread(scoped_thread && other) KRYPTO_NOEXCEPT
+    {
+        if(this != &other)
+            m_thread_impl = std::move(other.m_thread_impl);        
+    }
 
     scoped_thread &operator=(scoped_thread && other) KRYPTO_NOEXCEPT
     {

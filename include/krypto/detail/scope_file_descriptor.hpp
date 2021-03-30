@@ -32,14 +32,20 @@ public:
     
     scope_file_descriptor(scope_file_descriptor &&other) KRYPTO_NOEXCEPT
     {
-        m_file_descriptor = std::move(other.m_file_descriptor);
-        other.m_file_descriptor = -1;
+        if(this != &other)
+        {
+            m_file_descriptor = std::move(other.m_file_descriptor);
+            other.m_file_descriptor = -1;
+        }
     }
 
     scope_file_descriptor &operator=(scope_file_descriptor &&other) KRYPTO_NOEXCEPT
     {
-        m_file_descriptor = std::move(other.m_file_descriptor);
-        other.m_file_descriptor = -1;
+        if(this != &other)
+        {
+            m_file_descriptor = std::move(other.m_file_descriptor);
+            other.m_file_descriptor = -1;
+        }
         return *this;
     }
 

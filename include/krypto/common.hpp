@@ -37,6 +37,8 @@
 namespace krypto
 {
 
+using protocol = int;
+
 using log_clock = std::chrono::system_clock;
 using memory_buf_t = fmt::basic_memory_buffer<char, 250>;
 
