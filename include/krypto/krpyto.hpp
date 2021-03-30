@@ -11,10 +11,10 @@
 #include <krypto/detail/scope_thread.hpp>
 #include <krypto/detail/tcp_client.hpp>
 #include <krypto/detail/tcp_server.hpp>
+#include <krypto/detail/ssl_server.hpp>
 
 namespace krypto
 {
-
 
 } // namespace krypto
 
