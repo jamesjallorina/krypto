@@ -79,7 +79,7 @@ public:
             if((result = bind(m_socket.native_handle(), walk->ai_addr, walk->ai_addrlen)) == -1)
             {
                 last_errno = errno;
-                m_socket.release();
+                m_socket.close();
             }
             break;
         }

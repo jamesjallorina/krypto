@@ -47,12 +47,12 @@ KRYPTO_INLINE std::string network_to_printable_format(const struct sockaddr *add
     return std::string(buf);
 }
 
-KRYPTO_INLINE krypto::ustring printable_to_network_format(const int domain, 
+KRYPTO_INLINE unsigned char *printable_to_network_format(const int domain, 
                                                         std::string const &source)
 {
     int last_errno = 0;
     int result = 0;
-    unsigned char buf[sizeof(struct in6_addr)] = {0};
+    static unsigned char buf[sizeof(struct in6_addr)] = {0};
 
     result = ::inet_pton(domain, source.c_str(), buf);
     if(result <= 0)
@@ -67,12 +67,13 @@ KRYPTO_INLINE krypto::ustring printable_to_network_format(const int domain,
             throw_krypto_ex("::inet_pton failed: ", last_errno);
         }
     }
-    return krypto::ustring(buf);
+    return buf;
 }
 
-template<typename CharT>
-KRYPTO_INLINE size_t send(unique_socket &usocket, const CharT *data, size_t n_bytes, int flags = 0)
+template<typename StreamBuffer>
+KRYPTO_INLINE size_t send(unique_socket &usocket, const StreamBuffer *data, size_t n_bytes, int flags = 0)
 {
+    static_assert(krypto::is_valid_buffer<StreamBuffer>::value, "StreamBuffer should be a valid buffer");
     int write_result = 0;
     size_t bytes_sent = 0;
 
@@ -98,9 +99,11 @@ KRYPTO_INLINE size_t send(unique_socket &usocket, const CharT *data, size_t n_by
     return bytes_sent;
 }
 
-template<typename CharT>
-KRYPTO_INLINE size_t recv(unique_socket &usocket, CharT *data, size_t n_bytes, int flags = 0)
+template<typename StreamBuffer>
+KRYPTO_INLINE size_t recv(unique_socket &usocket, StreamBuffer *data, size_t n_bytes, int flags = 0)
 {
+    static_assert(krypto::is_valid_buffer<StreamBuffer>::value, "StreamBuffer should be a valid buffer");
+
     int recv_result = 0;
     size_t recv_bytes = 0;
 

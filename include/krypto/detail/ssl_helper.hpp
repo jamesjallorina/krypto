@@ -29,7 +29,7 @@ namespace detail
 namespace ssl_helper
 {
 
-inline char *ossl_err_as_string(void)
+inline std::string ossl_err_as_string(void)
 { 
     BIO *bio = ::BIO_new (::BIO_s_mem ());
     ::ERR_print_errors (bio);
@@ -40,74 +40,99 @@ inline char *ossl_err_as_string(void)
     if (ret)
         ::memcpy (ret, buf, len);
     ::BIO_free (bio);
-    return ret;
+    std::string str(ret);
+    free(ret);
+    return str;
 }
 
-class ssl_handle
+inline std::string certificates(SSL* ssl)
 {
-public:
-    ssl_handle() = default;
-    ssl_handle(SSL *ssl);
-    ssl_handle(ssl_handle && rhs) KRYPTO_NOEXCEPT;
-    ssl_handle &operator=(ssl_handle && rhs) KRYPTO_NOEXCEPT;
-    ~ssl_handle();
+    std::string msg;
+    X509 *cert = nullptr;
+    char *line = nullptr;
 
-    SSL *native_handle() { return m_ssl; }
-
-public:
-    ssl_handle(ssl_handle const &rhs) = delete;
-    ssl_handle &operator=(ssl_handle const &rhs)= delete;
-
-private:
-    unique_socket m_socket;
-    SSL *m_ssl = nullptr;
-};
-
-ssl_handle::ssl_handle(SSL *ssl)
-{
-    if(SSL_accept(ssl) == -1)
+    cert = ::SSL_get_peer_certificate(ssl); /* Get certificates (if available) */
+    if ( cert != NULL )
     {
-        auto msg = fmt::format("::SSL_accept failed {}", ossl_err_as_string());
-        throw_krypto_ex("invalid ssl handle");
+        msg = fmt::format("Server certificates:\n");
+        line = ::X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
+        msg += fmt::format("Subject: {}\n", std::string(line));
+        ::free(line);
+        line = ::X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+        msg += fmt::format("Issuer: {}\n", std::string(line));
+        ::free(line);
+        ::X509_free(cert);
     }
-    m_ssl = ssl;
-    m_socket = make_unique_socket(::SSL_get_fd(m_ssl));
+    else
+        msg = fmt::format("No certificates.\n");
+    
+    return msg;
 }
 
-ssl_handle::~ssl_handle()
+template <typename StreamBuf>
+inline size_t write(SSL *ssl, StreamBuf *buf, size_t n_bytes)
 {
-    if(m_ssl)
-        SSL_free(m_ssl);
-    m_ssl = nullptr;
-}
+    int write_result = 0;
+    int ssl_io_result = 0;
+    size_t write_bytes = 0;
 
-ssl_handle::ssl_handle(ssl_handle && rhs) KRYPTO_NOEXCEPT
-{
-    if(this != &rhs)
+    while(write_bytes < n_bytes)
     {
-        m_ssl = std::move(rhs.m_ssl);
-        m_socket = std::move(rhs.m_socket);
-        rhs.m_ssl = nullptr;
-        rhs.m_socket.release();
+        write_result = ::SSL_write(ssl, buf, n_bytes - write_bytes);
+
+        if(write_result <= 0)
+        {
+            ssl_io_result = ::SSL_get_error(ssl, write_result);
+            if(ssl_io_result <= SSL_ERROR_ZERO_RETURN)
+            {
+                if(ssl_io_result != SSL_ERROR_WANT_WRITE)
+                {
+                    auto msg = fmt::format("::SSL_write failed: {}", ossl_err_as_string());
+                    throw_krypto_ex(msg);
+                }
+            }
+            if(write_result == SSL_ERROR_WANT_WRITE)
+            {
+                continue;
+            }
+        }
+        write_bytes += static_cast<size_t>(write_result);
     }
+    return write_bytes;
 }
 
-ssl_handle &ssl_handle::operator=(ssl_handle &&rhs) KRYPTO_NOEXCEPT
+template <typename StreamBuf>
+inline size_t read(SSL *ssl, StreamBuf *buf, size_t n_bytes)
 {
-    if(this != &rhs)
+    int recv_result = 0;
+    int ssl_io_result = 0;
+    size_t recv_bytes = 0;
+
+    while(recv_bytes < n_bytes)
     {
-        m_ssl = std::move(rhs.m_ssl);
-        m_socket = std::move(rhs.m_socket);
-        rhs.m_ssl = nullptr;
-        rhs.m_socket.release();
+        recv_result = ::SSL_read(ssl, buf, n_bytes - recv_bytes);
+
+        if(recv_result <= 0)
+        {
+            ssl_io_result = ::SSL_get_error(ssl, recv_result);
+            if(ssl_io_result <= SSL_ERROR_ZERO_RETURN)
+            {
+                if(ssl_io_result != SSL_ERROR_WANT_READ)
+                {
+                    auto msg = fmt::format("::SSL_read failed: {}", ossl_err_as_string());
+                    throw_krypto_ex(msg);
+                }
+            }
+            if(recv_result == SSL_ERROR_WANT_READ)
+            {
+                continue;
+            }
+        }
+        recv_bytes += static_cast<size_t>(recv_result);
     }
-    return *this;
+    return recv_bytes;
 }
 
 }   // namespace ssl_helper
-
 }   // namespace detail
-
-using ssl_handle = detail::ssl_helper::ssl_handle;
-
 }   // namepsace krypto

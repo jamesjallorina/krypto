@@ -12,6 +12,7 @@
 #include <krypto/detail/tcp_client.hpp>
 #include <krypto/detail/tcp_server.hpp>
 #include <krypto/detail/ssl_server.hpp>
+#include <krypto/detail/ssl_handle.hpp>
 
 namespace krypto
 {

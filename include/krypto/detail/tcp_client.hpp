@@ -33,8 +33,13 @@ public:
     {
         if(is_connected())
         {
-            m_socket.release();
+            m_socket.close();
         }
+    }
+
+    int release()
+    {
+        return m_socket.release();
     }
 
     int fd() const
@@ -79,7 +84,7 @@ public:
             if(result == -1)
             {
                 last_errno = errno;
-                m_socket.release();
+                m_socket.close();
                 continue;
             }
             break;

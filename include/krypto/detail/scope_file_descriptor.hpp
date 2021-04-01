@@ -67,13 +67,24 @@ public:
         return (m_file_descriptor != -1);
     }
 
-    void release() KRYPTO_NOEXCEPT
+    void close() KRYPTO_NOEXCEPT
     {
         if(m_file_descriptor != -1)
         {
             ::close(m_file_descriptor);
             m_file_descriptor = -1;
         }
+    }
+
+    int release()
+    {
+        int file_descriptor = -1;
+        if(m_file_descriptor != -1)
+        {
+            file_descriptor = m_file_descriptor;
+            m_file_descriptor = -1;
+        }
+        return file_descriptor;
     }
 
     explicit operator bool() const KRYPTO_NOEXCEPT
