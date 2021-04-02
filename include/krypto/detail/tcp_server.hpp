@@ -16,7 +16,7 @@ namespace krypto
 namespace detail
 {
 
-template <protocol proto = PF_INET>
+template <protocol proto = AF_INET>
 class tcp_server
 {
 public:

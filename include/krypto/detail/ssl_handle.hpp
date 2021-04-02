@@ -8,6 +8,8 @@
 
 #include <krypto/detail/ssl_helper.hpp>
 
+#include  <sys/socket.h>
+
 namespace krypto
 {
 namespace detail
@@ -15,28 +17,6 @@ namespace detail
 
 using ssl_helper::ossl_err_as_string;
 using ssl_helper::certificates;
-
-/*
-excerpt::
-
-template <bool Serverhandle, 
-    template <class Method> class ConnectionPolicy = TLSConnect>
-class ssl_handle;
-
-template <template <class Method> class ConnectionPolicy>
-class ssl_handle<true, ConnectionPolicy>
-{
-    // implementation here for server handle type
-}
-
-template <template <class Method> class ConnectionPolicy = TLSConnect>
-class ssl_handle<false, ConnectionPolicy>
-{
-    // implementation here for client handle type
-}
-
-
-*/
 
 template <bool Serverhandle>
 class ssl_handle;
@@ -47,14 +27,14 @@ class ssl_handle<true>
 {
 public:
     ssl_handle() = default;
-    explicit ssl_handle(SSL *ssl)
+    explicit ssl_handle(SSL *ssl) : m_ssl{ssl}
     {
-        if(SSL_accept(ssl) == -1)
+        //::SSL_CTX_set_verify(::SSL_get_SSL_CTX(m_ssl), SSL_VERIFY_PEER, NULL);
+        if(::SSL_accept(m_ssl) <= 0)
         {
             auto msg = fmt::format("::SSL_accept failed {}", ossl_err_as_string());
             throw_krypto_ex(msg);
         }
-        m_ssl = ssl;
         m_socket = make_unique_socket(::SSL_get_fd(m_ssl));
     }
     
@@ -83,14 +63,17 @@ public:
     ~ssl_handle()
     {
         if(m_ssl)
+        {
+            ::SSL_shutdown(m_ssl);
             ::SSL_free(m_ssl);
+        }
         m_ssl = nullptr;
     }
 
     SSL *native_handle() { return m_ssl; }
 
     template <typename StreamBuf>
-    size_t ssl_read(StreamBuf *buf, int len)
+    size_t read(StreamBuf *buf, int len)
     {
         size_t result = 0;
         try
@@ -105,7 +88,7 @@ public:
     }
 
     template<typename StreamBuf>
-    size_t ssl_write(StreamBuf *buf, int len)
+    size_t write(StreamBuf *buf, int len)
     {
         size_t result = 0;
         try
@@ -138,14 +121,19 @@ template <>
 class ssl_handle<false>
 {
 public:
-    explicit ssl_handle(SSL *ssl)
+    explicit ssl_handle(SSL *ssl) : m_ssl{ssl}
     {
-        if(SSL_accept(ssl) == -1)
+        int result = 0;
+        if((result = ::SSL_connect(m_ssl)) < 1)
         {
-            auto msg = fmt::format("::SSL_accept failed {}", ossl_err_as_string());
+            result = ::SSL_get_error(m_ssl, result);
+            auto msg = fmt::format("::SSL_connect failed {}", ossl_err_as_string());
+            if(result == 5)
+            {
+                msg += fmt::format("SSL_get_error: 5");
+            }
             throw_krypto_ex(msg);
         }
-        m_ssl = ssl;
         m_socket = make_unique_socket(::SSL_get_fd(m_ssl));
     }
 
@@ -156,6 +144,7 @@ public:
             m_ssl = std::move(rhs.m_ssl);
             m_socket = std::move(rhs.m_socket);
             rhs.m_ssl = nullptr;
+            rhs.m_socket.release();
         }
     }
 
@@ -166,6 +155,7 @@ public:
             m_ssl = std::move(rhs.m_ssl);
             m_socket = std::move(rhs.m_socket);
             rhs.m_ssl = nullptr;
+            rhs.m_socket.release();
         }
         return *this;  
     }
@@ -173,9 +163,14 @@ public:
     ~ssl_handle()
     {
         if(m_ssl)
+        {
+            ::SSL_shutdown(m_ssl);
             ::SSL_free(m_ssl);
+        }
         m_ssl = nullptr;
     }
+
+    SSL *native_handle() { return m_ssl; }
 
     template <typename StreamBuf>
     size_t ssl_read(StreamBuf *buf, int len)

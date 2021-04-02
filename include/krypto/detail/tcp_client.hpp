@@ -17,7 +17,7 @@ namespace krypto
 namespace detail
 {
 
-template <protocol proto = AF_UNSPEC>
+template <protocol proto = PF_INET>
 class tcp_client
 {
 
@@ -56,7 +56,7 @@ public:
         int result = 0;
 
         std::memset(&hints, 0, sizeof hints);
-        hints.ai_family = proto;        // IP version-agnostic
+        hints.ai_family = static_cast<int>(proto);        // IP version-agnostic
         hints.ai_socktype = SOCK_STREAM;    // TCP SOCKET STREAM
 
         result = ::getaddrinfo(ip_addr.c_str(), port.c_str(), &hints, &servinfo);
