@@ -7,7 +7,7 @@
 #pragma once
 
 #include <krypto/detail/ssl_helper.hpp>
-#include <krypto/detail/ssl_handle.hpp>
+#include <krypto/detail/basic_handle.hpp>
 #include <krypto/detail/tcp_server.hpp>
 
 namespace krypto
@@ -169,7 +169,7 @@ void ssl_server::init_server_context(void)
 
     ::SSL_load_error_strings();           /* load all error messages */
     ::SSL_library_init();
-    ::OpenSSL_add_all_algorithms();       /* load & register all cryptos, etc. */
+    //::OpenSSL_add_all_algorithms();       /* load & register all cryptos, etc. */
     
     method = ::TLSv1_2_server_method();   /* create new server-method instance */
     m_ctx = ::SSL_CTX_new(method);        /* create new context from method */

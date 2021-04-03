@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <krypto/detail/ssl_handle.hpp>
+#include <krypto/detail/basic_handle.hpp>
 #include <krypto/detail/tcp_client.hpp>
 
 namespace krypto

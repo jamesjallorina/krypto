@@ -19,15 +19,15 @@ using ssl_helper::ossl_err_as_string;
 using ssl_helper::certificates;
 
 template <bool Serverhandle>
-class ssl_handle;
+class basic_handle;
 
 // handles incoming ssl connection to the server
 template <>
-class ssl_handle<true>
+class basic_handle<true>
 {
 public:
-    ssl_handle() = default;
-    explicit ssl_handle(SSL *ssl) : m_ssl{ssl}
+    basic_handle() = default;
+    explicit basic_handle(SSL *ssl) : m_ssl{ssl}
     {
         //::SSL_CTX_set_verify(::SSL_get_SSL_CTX(m_ssl), SSL_VERIFY_PEER, NULL);
         if(::SSL_accept(m_ssl) <= 0)
@@ -38,7 +38,7 @@ public:
         m_socket = make_unique_socket(::SSL_get_fd(m_ssl));
     }
     
-    ssl_handle(ssl_handle && rhs) KRYPTO_NOEXCEPT
+    basic_handle(basic_handle && rhs) KRYPTO_NOEXCEPT
     {
         if(this != &rhs)
         {
@@ -48,7 +48,7 @@ public:
             rhs.m_socket.release();
         }
     }
-    ssl_handle &operator=(ssl_handle && rhs) KRYPTO_NOEXCEPT
+    basic_handle &operator=(basic_handle && rhs) KRYPTO_NOEXCEPT
     {
         if(this != &rhs)
         {
@@ -60,7 +60,7 @@ public:
         return *this;
     }
     
-    ~ssl_handle()
+    ~basic_handle()
     {
         if(m_ssl)
         {
@@ -108,8 +108,8 @@ public:
     }
 
 private:
-    ssl_handle(ssl_handle const &rhs) = delete;
-    ssl_handle &operator=(ssl_handle const &rhs)= delete;
+    basic_handle(basic_handle const &rhs) = delete;
+    basic_handle &operator=(basic_handle const &rhs)= delete;
 
 private:
     SSL *m_ssl = nullptr;
@@ -118,10 +118,10 @@ private:
 
 // handles connection attemp to Server 
 template <>
-class ssl_handle<false>
+class basic_handle<false>
 {
 public:
-    explicit ssl_handle(SSL *ssl) : m_ssl{ssl}
+    explicit basic_handle(SSL *ssl) : m_ssl{ssl}
     {
         int result = 0;
         if((result = ::SSL_connect(m_ssl)) < 1)
@@ -137,7 +137,7 @@ public:
         m_socket = make_unique_socket(::SSL_get_fd(m_ssl));
     }
 
-    ssl_handle(ssl_handle && rhs) KRYPTO_NOEXCEPT
+    basic_handle(basic_handle && rhs) KRYPTO_NOEXCEPT
     {
         if(this != &rhs)
         {
@@ -148,7 +148,7 @@ public:
         }
     }
 
-    ssl_handle &operator=(ssl_handle && rhs) KRYPTO_NOEXCEPT
+    basic_handle &operator=(basic_handle && rhs) KRYPTO_NOEXCEPT
     {
         if(this != &rhs)
         {
@@ -160,7 +160,7 @@ public:
         return *this;  
     }
 
-    ~ssl_handle()
+    ~basic_handle()
     {
         if(m_ssl)
         {
@@ -201,9 +201,15 @@ public:
         }
         return result;
     }
+
+    std::string get_certificates() const
+    {
+        return certificates(m_ssl);
+    }
+
 private:
-    ssl_handle(ssl_handle const &rhs) = delete;
-    ssl_handle &operator=(ssl_handle const &rhs)= delete;
+    basic_handle(basic_handle const &rhs) = delete;
+    basic_handle &operator=(basic_handle const &rhs)= delete;
 
 private:
     SSL *m_ssl = nullptr;
@@ -212,7 +218,7 @@ private:
 
 }   // namespace detail
 
-using server_handle = detail::ssl_handle<true>;
-using client_handle = detail::ssl_handle<false>;
+using server_handle = detail::basic_handle<true>;
+using client_handle = detail::basic_handle<false>;
 
 }   // namespace krypto
