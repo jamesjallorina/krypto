@@ -26,7 +26,6 @@ template <>
 class basic_handle<true>
 {
 public:
-    basic_handle() = default;
     explicit basic_handle(SSL *ssl) : m_ssl{ssl}
     {
         //::SSL_CTX_set_verify(::SSL_get_SSL_CTX(m_ssl), SSL_VERIFY_PEER, NULL);
