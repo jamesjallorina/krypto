@@ -56,7 +56,7 @@ void check_for_error(SSL *ssl, int result)
     }
 }
 
-void response(std::unique_ptr<krypto::server_handle> ssl) /* Serve the connection -- threadable */
+void response(std::unique_ptr<krypto::server_handle> handle) /* Serve the connection -- threadable */
 {   
     int bytes;
     char buf[1024] = {0};
@@ -65,19 +65,17 @@ void response(std::unique_ptr<krypto::server_handle> ssl) /* Serve the connectio
     const char* HTMLecho="<html><body><pre>%s</pre></body></html>\n\n";
 
     std::cout << "process client requests . . ." << std::endl;
-    std::cout << ssl->get_certificates() << std::endl;             /* get any certificates */
-    //bytes = ssl->read(buf, sizeof(buf));    /* get request */
-    bytes = ::SSL_read(ssl->native_handle(), buf, sizeof(buf));
+    std::cout << handle->get_certificates() << std::endl;             /* get any certificates */
+    bytes = handle->read(buf, sizeof(buf));    /* get request */
 
-    check_for_error(ssl->native_handle(), bytes);
+    check_for_error(handle->native_handle(), bytes);
 
     if ( bytes > 0 )
     {
         buf[bytes] = 0;
         std::cout << "client msg: " << buf << std::endl;
         sprintf(reply, HTMLecho, buf);      /* construct reply */
-        //ssl->write(reply, strlen(reply));   /* send reply */
-        ::SSL_write(ssl->native_handle(), reply, strlen(reply));
+        handle->write(reply, strlen(reply));   /* send reply */
     }
     else
         ERR_print_errors_fp(stderr);
@@ -103,7 +101,12 @@ int main(int argc, char **argv)
 
     try
     {
-        server = std::make_unique<ssl_server>(port, std::stoi(number_of_connections), certificate, key);
+        server = std::make_unique<ssl_server>(
+                                            port, 
+                                            std::stoi(number_of_connections), 
+                                            certificate, 
+                                            key
+                                            );
     }
     catch(const krypto::krypto_ex & ex)
     {
@@ -114,7 +117,9 @@ int main(int argc, char **argv)
     while(true)
     {
         std::unique_ptr<krypto::server_handle> handle = 
-            std::make_unique<krypto::server_handle>(server->accept_connections());
+            std::make_unique<krypto::server_handle> (
+                                                    server->accept_connections()
+                                                    );
 
         response(std::move(handle));
     }

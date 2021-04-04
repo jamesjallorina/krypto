@@ -19,8 +19,8 @@ void send_request(std::unique_ptr<krypto::client_handle> handle)
 
     std::cout << "Connected with " << ::SSL_get_cipher(handle->native_handle()) << " encryption\n";
 
-    SSL_write(handle->native_handle(), msg, strlen(msg));           /* encrypt & send message */
-    bytes = SSL_read(handle->native_handle(), buf, sizeof(buf));    /* get reply & decrypt */
+    handle->write(msg, strlen(msg));           /* encrypt & send message */
+    bytes = handle->read(buf, sizeof(buf));    /* get reply & decrypt */
     buf[bytes] = 0;
     std::cout << "server msg: " << buf << std::endl;
 }
