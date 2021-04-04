@@ -26,6 +26,9 @@ template <>
 class basic_handle<true>
 {
 public:
+    using handle_type = SSL*;
+    using socket_type = unique_socket::underlying_type;
+
     explicit basic_handle(SSL *ssl) : m_ssl{ssl}
     {
         //::SSL_CTX_set_verify(::SSL_get_SSL_CTX(m_ssl), SSL_VERIFY_PEER, NULL);
@@ -69,8 +72,8 @@ public:
         m_ssl = nullptr;
     }
 
-    SSL *native_handle() { return m_ssl; }
-    int socket_handle() { return m_socket.native_handle(); }
+    handle_type native_handle() { return m_ssl; }
+    socket_type socket_handle() { return m_socket.native_handle(); }
 
     template <typename StreamBuf>
     size_t read(StreamBuf *buf, int len)
@@ -121,6 +124,9 @@ template <>
 class basic_handle<false>
 {
 public:
+    using handle_type = SSL*;
+    using socket_type = unique_socket::underlying_type;
+
     explicit basic_handle(SSL *ssl) : m_ssl{ssl}
     {
         int result = 0;
@@ -170,8 +176,8 @@ public:
         m_ssl = nullptr;
     }
 
-    SSL *native_handle() { return m_ssl; }
-    int socket_handle() { return m_socket.native_handle(); }
+    handle_type native_handle() { return m_ssl; }
+    socket_type socket_handle() { return m_socket.native_handle(); }
 
     template <typename StreamBuf>
     size_t read(StreamBuf *buf, int len)

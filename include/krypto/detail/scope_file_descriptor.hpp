@@ -20,6 +20,8 @@ namespace detail
 class scope_file_descriptor
 {
 public:
+    using underlying_type = int;
+
     scope_file_descriptor() KRYPTO_NOEXCEPT : 
         m_file_descriptor(-1) {}
     
