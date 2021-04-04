@@ -74,31 +74,21 @@ inline size_t write(SSL *ssl, StreamBuf *buf, size_t n_bytes)
 {
     int write_result = 0;
     int ssl_io_result = 0;
-    size_t write_bytes = 0;
 
-    while(write_bytes < n_bytes)
+    write_result = ::SSL_write(ssl, buf, n_bytes);
+    if(write_result <= 0)
     {
-        write_result = ::SSL_write(ssl, buf, n_bytes - write_bytes);
-
-        if(write_result <= 0)
+        ssl_io_result = ::SSL_get_error(ssl, write_result);
+        if(ssl_io_result <= SSL_ERROR_ZERO_RETURN)
         {
-            ssl_io_result = ::SSL_get_error(ssl, write_result);
-            if(ssl_io_result <= SSL_ERROR_ZERO_RETURN)
+            if(ssl_io_result != SSL_ERROR_WANT_WRITE)
             {
-                if(ssl_io_result != SSL_ERROR_WANT_WRITE)
-                {
-                    auto msg = fmt::format("::SSL_write failed: {}", ossl_err_as_string());
-                    throw_krypto_ex(msg);
-                }
-            }
-            if(write_result == SSL_ERROR_WANT_WRITE)
-            {
-                continue;
+                auto msg = fmt::format("::SSL_write failed: {}", ossl_err_as_string());
+                throw_krypto_ex(msg);
             }
         }
-        write_bytes += static_cast<size_t>(write_result);
     }
-    return write_bytes;
+    return write_result;
 }
 
 template <typename StreamBuf>
@@ -106,31 +96,22 @@ inline size_t read(SSL *ssl, StreamBuf *buf, size_t n_bytes)
 {
     int recv_result = 0;
     int ssl_io_result = 0;
-    size_t recv_bytes = 0;
 
-    while(recv_bytes < n_bytes)
+    recv_result = ::SSL_read(ssl, buf, n_bytes);
+
+    if(recv_result <= 0)
     {
-        recv_result = ::SSL_read(ssl, buf, n_bytes - recv_bytes);
-
-        if(recv_result <= 0)
+        ssl_io_result = ::SSL_get_error(ssl, recv_result);
+        if(ssl_io_result <= SSL_ERROR_ZERO_RETURN)
         {
-            ssl_io_result = ::SSL_get_error(ssl, recv_result);
-            if(ssl_io_result <= SSL_ERROR_ZERO_RETURN)
+            if(ssl_io_result != SSL_ERROR_WANT_READ)
             {
-                if(ssl_io_result != SSL_ERROR_WANT_READ)
-                {
-                    auto msg = fmt::format("::SSL_read failed: {}", ossl_err_as_string());
-                    throw_krypto_ex(msg);
-                }
-            }
-            if(recv_result == SSL_ERROR_WANT_READ)
-            {
-                continue;
+                auto msg = fmt::format("::SSL_read failed: {}", ossl_err_as_string());
+                throw_krypto_ex(msg);
             }
         }
-        recv_bytes += static_cast<size_t>(recv_result);
     }
-    return recv_bytes;
+    return recv_result;
 }
 
 }   // namespace ssl_helper

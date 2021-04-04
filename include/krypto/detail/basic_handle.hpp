@@ -70,6 +70,7 @@ public:
     }
 
     SSL *native_handle() { return m_ssl; }
+    int socket_handle() { return m_socket.native_handle(); }
 
     template <typename StreamBuf>
     size_t read(StreamBuf *buf, int len)
@@ -170,9 +171,10 @@ public:
     }
 
     SSL *native_handle() { return m_ssl; }
+    int socket_handle() { return m_socket.native_handle(); }
 
     template <typename StreamBuf>
-    size_t ssl_read(StreamBuf *buf, int len)
+    size_t read(StreamBuf *buf, int len)
     {
         size_t result = 0;
         try
@@ -187,7 +189,7 @@ public:
     }
 
     template<typename StreamBuf>
-    size_t ssl_write(StreamBuf *buf, int len)
+    size_t write(StreamBuf *buf, int len)
     {
         size_t result = 0;
         try
