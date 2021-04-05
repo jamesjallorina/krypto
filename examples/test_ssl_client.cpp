@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+
+#include <typeinfo>
 void send_request(std::unique_ptr<krypto::client_handle> handle)
 {
     int bytes = 0;
@@ -18,9 +20,9 @@ void send_request(std::unique_ptr<krypto::client_handle> handle)
     char *msg = "This is a message from a ssl client";
 
     std::cout << "Connected with " << ::SSL_get_cipher(handle->native_handle()) << " encryption\n";
-
-    handle->write(msg, strlen(msg));           /* encrypt & send message */
-    bytes = handle->read(buf, sizeof(buf));    /* get reply & decrypt */
+         
+    krypto::write(*handle, msg, strlen(msg));           /* encrypt & send message */
+    bytes = krypto::read(*handle, buf, sizeof(buf));    /* get reply & decrypt */
     buf[bytes] = 0;
     std::cout << "server msg: " << buf << std::endl;
 }

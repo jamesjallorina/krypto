@@ -66,7 +66,8 @@ void response(std::unique_ptr<krypto::server_handle> handle) /* Serve the connec
 
     std::cout << "process client requests . . ." << std::endl;
     std::cout << handle->get_certificates() << std::endl;             /* get any certificates */
-    bytes = handle->read(buf, sizeof(buf));    /* get request */
+    
+    bytes = krypto::read(*handle, buf, sizeof(buf));    /* get request */
 
     check_for_error(handle->native_handle(), bytes);
 
@@ -75,7 +76,7 @@ void response(std::unique_ptr<krypto::server_handle> handle) /* Serve the connec
         buf[bytes] = 0;
         std::cout << "client msg: " << buf << std::endl;
         sprintf(reply, HTMLecho, buf);      /* construct reply */
-        handle->write(reply, strlen(reply));   /* send reply */
+        krypto::write(*handle, reply, strlen(reply));   /* send reply */
     }
     else
         ERR_print_errors_fp(stderr);
@@ -101,12 +102,8 @@ int main(int argc, char **argv)
 
     try
     {
-        server = std::make_unique<ssl_server>(
-                                            port, 
-                                            std::stoi(number_of_connections), 
-                                            certificate, 
-                                            key
-                                            );
+        server = std::make_unique<ssl_server>(certificate, key);
+        server->run_listener(port, std::stoi(number_of_connections));
     }
     catch(const krypto::krypto_ex & ex)
     {
