@@ -6,12 +6,13 @@
 
 #pragma once
 
-#include <krypto/detail/ssl_helper.hpp>
-
+#include <openssl/err.h>
+#include <openssl/ssl.h>
 #include  <sys/socket.h>
 
 namespace krypto
 {
+
 namespace detail
 {
 
@@ -74,36 +75,6 @@ public:
 
     handle_type native_handle() { return m_ssl; }
     socket_type socket_handle() { return m_socket.native_handle(); }
-
-    template <typename StreamBuf>
-    size_t read(StreamBuf *buf, int len)
-    {
-        size_t result = 0;
-        try
-        {
-            result = ssl_helper::read(m_ssl, buf, len);
-        }
-        catch(const krypto_ex & e)
-        {
-            throw;
-        }
-        return result;
-    }
-
-    template<typename StreamBuf>
-    size_t write(StreamBuf *buf, int len)
-    {
-        size_t result = 0;
-        try
-        {
-            result = ssl_helper::write(m_ssl, buf, len);
-        }
-        catch(const krypto_ex & e)
-        {
-            throw;
-        }
-        return result;
-    }
 
     std::string get_certificates() const
     {
@@ -178,36 +149,6 @@ public:
 
     handle_type native_handle() { return m_ssl; }
     socket_type socket_handle() { return m_socket.native_handle(); }
-
-    template <typename StreamBuf>
-    size_t read(StreamBuf *buf, int len)
-    {
-        size_t result = 0;
-        try
-        {
-            result = ssl_helper::read(m_ssl, buf, len);
-        }
-        catch(const krypto_ex & e)
-        {
-            throw;
-        }
-        return result;
-    }
-
-    template<typename StreamBuf>
-    size_t write(StreamBuf *buf, int len)
-    {
-        size_t result = 0;
-        try
-        {
-            result = ssl_helper::write(m_ssl, buf, len);
-        }
-        catch(const krypto_ex & e)
-        {
-            throw;
-        }
-        return result;
-    }
 
     std::string get_certificates() const
     {

@@ -10,15 +10,9 @@
 #include <krypto/detail/scope_file_descriptor.hpp>
 #include <krypto/fmt/fmt.hpp>
 
+#include <type_traits>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
-#include <openssl/crypto.h>
-#include <openssl/pem.h>
-#include <openssl/err.h>
-#include <openssl/bio.h>
-#include <openssl/x509.h>
-#include <openssl/pem.h>
-#include <openssl/err.h>
 
 namespace krypto
 {
@@ -69,16 +63,17 @@ inline std::string certificates(SSL* ssl)
     return msg;
 }
 
-template <typename StreamBuf>
-inline size_t write(SSL *ssl, StreamBuf *buf, size_t n_bytes)
+template <typename HandleType, typename StreamBuf>
+inline size_t write(HandleType &handle, StreamBuf *buf, size_t n_bytes)
 {
+    static_assert(is_basic_handle<HandleType>::value, "HandleType must be server_handle or client_handle");
     int write_result = 0;
     int ssl_io_result = 0;
 
-    write_result = ::SSL_write(ssl, buf, n_bytes);
+    write_result = ::SSL_write(handle.native_handle(), buf, n_bytes);
     if(write_result <= 0)
     {
-        ssl_io_result = ::SSL_get_error(ssl, write_result);
+        ssl_io_result = ::SSL_get_error(handle.native_handle(), write_result);
         if(ssl_io_result <= SSL_ERROR_ZERO_RETURN)
         {
             if(ssl_io_result != SSL_ERROR_WANT_WRITE)
@@ -91,17 +86,18 @@ inline size_t write(SSL *ssl, StreamBuf *buf, size_t n_bytes)
     return write_result;
 }
 
-template <typename StreamBuf>
-inline size_t read(SSL *ssl, StreamBuf *buf, size_t n_bytes)
+template <typename HandleType, typename StreamBuf>
+inline size_t read(HandleType &handle, StreamBuf *buf, size_t n_bytes)
 {
+    static_assert(is_basic_handle<HandleType>::value, "HandleType must be server_handle or client_handle");
     int recv_result = 0;
     int ssl_io_result = 0;
 
-    recv_result = ::SSL_read(ssl, buf, n_bytes);
+    recv_result = ::SSL_read(handle.native_handle(), buf, n_bytes);
 
     if(recv_result <= 0)
     {
-        ssl_io_result = ::SSL_get_error(ssl, recv_result);
+        ssl_io_result = ::SSL_get_error(handle.native_handle(), recv_result);
         if(ssl_io_result <= SSL_ERROR_ZERO_RETURN)
         {
             if(ssl_io_result != SSL_ERROR_WANT_READ)
@@ -116,4 +112,8 @@ inline size_t read(SSL *ssl, StreamBuf *buf, size_t n_bytes)
 
 }   // namespace ssl_helper
 }   // namespace detail
+
+using detail::ssl_helper::write;
+using detail::ssl_helper::read;
+
 }   // namepsace krypto

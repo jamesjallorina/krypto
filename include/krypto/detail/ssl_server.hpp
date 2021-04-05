@@ -40,16 +40,7 @@ class ssl_server
 
 public:
     ssl_server() = delete;
-    ssl_server(std::string const &port_number, 
-                const int no_of_connections,
-                std::string const &certificate,
-                std::string const &key
-                );
-    ssl_server(const int port_number, 
-                const int no_of_connections,
-                std::string const &certificate,
-                std::string const &key
-                );
+    ssl_server(std::string const &certificate, std::string const &key);
     ssl_server(ssl_server && rhs) KRYPTO_NOEXCEPT;
     ssl_server &operator=(ssl_server &&rhs) KRYPTO_NOEXCEPT;
     ~ssl_server();
@@ -62,6 +53,7 @@ public:
     server_handle accept_connections(
         struct sockaddr_storage &their_addr, 
         socklen_t &sin_size);
+    void run_listener(std::string const &port_number, const int no_of_connections);
 
 private:
     void init_server_context(void);
@@ -79,8 +71,6 @@ private:
 };
 
 ssl_server::ssl_server(
-    std::string const &port_number, 
-    const int no_of_connections,
     std::string const &certificate,
     std::string const &key
     )
@@ -96,18 +86,6 @@ ssl_server::ssl_server(
     {
         throw;
     }
-    server->create_listener(port_number, no_of_connections);
-}
-
-ssl_server::ssl_server(
-    const int port_number, 
-    const int no_of_connections,
-    std::string const &certificate,
-    std::string const &key
-    )
-{
-    std::string port = std::to_string(port_number);
-    ssl_server(port, no_of_connections, certificate, key);
 }
 
 ssl_server::ssl_server(ssl_server && rhs) KRYPTO_NOEXCEPT
@@ -137,6 +115,13 @@ ssl_server::~ssl_server()
         ::SSL_CTX_free(m_ctx);
     m_ctx = nullptr;
     cleanup_openssl();
+}
+
+KRYPTO_INLINE
+void ssl_server::run_listener(std::string const &port_number, 
+                                const int no_of_connections)
+{
+    server->create_listener(port_number, no_of_connections);
 }
 
 KRYPTO_INLINE

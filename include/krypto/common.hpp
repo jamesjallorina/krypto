@@ -57,6 +57,14 @@ template <typename T> struct is_valid_buffer : std::false_type {};
 template <> struct is_valid_buffer<char> : std::true_type  {};
 template <> struct is_valid_buffer<uint8_t> : std::true_type {};
 
+// Detection idiom for valid basic_handle
+template <typename T, typename = void> 
+struct is_basic_handle : std::false_type {};
+
+template <typename T> 
+struct is_basic_handle<T, void_t<typename T::handle_type, 
+                                typename T::socket_type>> 
+                                : std::true_type {};
 
 class krypto_ex : public std::exception
 {
