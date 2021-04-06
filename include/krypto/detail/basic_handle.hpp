@@ -32,12 +32,8 @@ public:
 
     explicit basic_handle(SSL *ssl) : m_ssl{ssl}
     {
-        //::SSL_CTX_set_verify(::SSL_get_SSL_CTX(m_ssl), SSL_VERIFY_PEER, NULL);
-        if(::SSL_accept(m_ssl) <= 0)
-        {
-            auto msg = fmt::format("::SSL_accept failed {}", ossl_err_as_string());
-            throw_krypto_ex(msg);
-        }
+        if(m_ssl)
+            state = true;
         m_socket = make_unique_socket(::SSL_get_fd(m_ssl));
     }
     
@@ -73,6 +69,8 @@ public:
         m_ssl = nullptr;
     }
 
+    bool is_valid() const { return state; }
+
     handle_type native_handle() { return m_ssl; }
     socket_type socket_handle() { return m_socket.native_handle(); }
 
@@ -86,6 +84,7 @@ private:
     basic_handle &operator=(basic_handle const &rhs)= delete;
 
 private:
+    bool state = false;
     SSL *m_ssl = nullptr;
     unique_socket m_socket;
 };
@@ -100,17 +99,8 @@ public:
 
     explicit basic_handle(SSL *ssl) : m_ssl{ssl}
     {
-        int result = 0;
-        if((result = ::SSL_connect(m_ssl)) < 1)
-        {
-            result = ::SSL_get_error(m_ssl, result);
-            auto msg = fmt::format("::SSL_connect failed {}", ossl_err_as_string());
-            if(result == 5)
-            {
-                msg += fmt::format("SSL_get_error: 5");
-            }
-            throw_krypto_ex(msg);
-        }
+        if(m_ssl)
+            state = true;
         m_socket = make_unique_socket(::SSL_get_fd(m_ssl));
     }
 
@@ -147,6 +137,8 @@ public:
         m_ssl = nullptr;
     }
 
+    bool is_valid() const { return state; }
+
     handle_type native_handle() { return m_ssl; }
     socket_type socket_handle() { return m_socket.native_handle(); }
 
@@ -160,6 +152,7 @@ private:
     basic_handle &operator=(basic_handle const &rhs)= delete;
 
 private:
+    bool state = false;
     SSL *m_ssl = nullptr;
     unique_socket m_socket;
 };
