@@ -12,6 +12,9 @@
 #include <chrono>
 #include <exception>
 
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+
 #define KRYPTO_NOEXCEPT noexcept
 #define KRYPTO_CONSTEXPR constexpr
 
@@ -41,30 +44,6 @@ using protocol = int;
 
 using log_clock = std::chrono::system_clock;
 using memory_buf_t = fmt::basic_memory_buffer<char, 250>;
-
-// SFINAE use cases
-template <typename ...Ts>
-using void_t = void;
-
-template <typename T> struct is_char : std::false_type {};
-template <> struct is_char<char> : std::true_type {};
-template <> struct is_char<char16_t> : std::true_type {};
-template <> struct is_char<char32_t> : std::true_type {};
-
-
-// Detection idiom for valid socket buffer
-template <typename T> struct is_valid_buffer : std::false_type {};
-template <> struct is_valid_buffer<char> : std::true_type  {};
-template <> struct is_valid_buffer<uint8_t> : std::true_type {};
-
-// Detection idiom for valid basic_handle
-template <typename T, typename = void> 
-struct is_basic_handle : std::false_type {};
-
-template <typename T> 
-struct is_basic_handle<T, void_t<typename T::handle_type, 
-                                typename T::socket_type>> 
-                                : std::true_type {};
 
 class krypto_ex : public std::exception
 {

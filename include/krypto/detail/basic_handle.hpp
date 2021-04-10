@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <krypto/detail/ssl_helper.hpp>
+
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 #include  <sys/socket.h>
@@ -15,9 +17,6 @@ namespace krypto
 
 namespace detail
 {
-
-using ssl_helper::ossl_err_as_string;
-using ssl_helper::certificates;
 
 template <bool Serverhandle>
 class basic_handle;
@@ -74,8 +73,9 @@ public:
     handle_type native_handle() { return m_ssl; }
     socket_type socket_handle() { return m_socket.native_handle(); }
 
-    std::string get_certificates() const
+    std::string get_certificates()
     {
+        using ssl_helper::certificates;
         return certificates(m_ssl);
     }
 
@@ -142,8 +142,9 @@ public:
     handle_type native_handle() { return m_ssl; }
     socket_type socket_handle() { return m_socket.native_handle(); }
 
-    std::string get_certificates() const
+    std::string get_certificates()
     {
+        using ssl_helper::certificates;
         return certificates(m_ssl);
     }
 

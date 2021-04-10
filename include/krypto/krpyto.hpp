@@ -14,10 +14,23 @@
 #include <krypto/detail/ssl_server.hpp>
 #include <krypto/detail/ssl_client.hpp>
 #include <krypto/detail/basic_handle.hpp>
+#include <krypto/detail/ssl_helper.hpp>
+#include <krypto/detail/connector.hpp>
+#include <krypto/detail/acceptor.hpp>
 
 namespace krypto
 {
 // declare all public krpyto library APIs here
+
+void handshake(server_handle &handle)
+{
+    detail::handshake(handle);
+}
+
+void handshake(client_handle &handle)
+{
+    detail::handshake(handle);
+}
 
 } // namespace krypto
 

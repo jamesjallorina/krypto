@@ -7,15 +7,21 @@
 #pragma once
 
 #include <krypto/common.hpp>
+#include <krypto/support/is_basic_handle.hpp>
 #include <krypto/detail/scope_file_descriptor.hpp>
 #include <krypto/fmt/fmt.hpp>
 
 #include <type_traits>
-#include <openssl/err.h>
-#include <openssl/ssl.h>
 
 namespace krypto
 {
+
+namespace detail{
+
+template<bool Serverhandle>
+class basic_handle;
+
+}
 
 namespace detail
 {
@@ -66,7 +72,7 @@ inline std::string certificates(SSL* ssl)
 template <typename HandleType, typename StreamBuf>
 inline size_t write(HandleType &handle, StreamBuf *buf, size_t n_bytes)
 {
-    static_assert(is_basic_handle<HandleType>::value, "HandleType must be server_handle or client_handle");
+    static_assert(support::is_basic_handle<HandleType>::value, "HandleType must meet the requirements");
     int write_result = 0;
     int ssl_io_result = 0;
 
@@ -89,7 +95,7 @@ inline size_t write(HandleType &handle, StreamBuf *buf, size_t n_bytes)
 template <typename HandleType, typename StreamBuf>
 inline size_t read(HandleType &handle, StreamBuf *buf, size_t n_bytes)
 {
-    static_assert(is_basic_handle<HandleType>::value, "HandleType must be server_handle or client_handle");
+    static_assert(support::is_basic_handle<HandleType>::value, "HandleType must meet the requirements");
     int recv_result = 0;
     int ssl_io_result = 0;
 

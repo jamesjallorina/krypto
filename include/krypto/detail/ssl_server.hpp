@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <krypto/detail/ssl_helper.hpp>
 #include <krypto/detail/basic_handle.hpp>
+#include <krypto/detail/ssl_helper.hpp>
 #include <krypto/detail/tcp_server.hpp>
 
 namespace krypto
@@ -161,7 +161,7 @@ void ssl_server::init_server_context(void)
 
     if(m_ctx == NULL)
     {
-        auto msg = fmt::format("::SSL_CTX_new failed: {}", ossl_err_as_string());
+        auto msg = fmt::format("::SSL_CTX_new failed: {}", ssl_helper::ossl_err_as_string());
         throw_krypto_ex(msg);
     }
 /*
@@ -193,13 +193,13 @@ void ssl_server::load_certificate(
     /* set the local certificate from CertFile */
     if (::SSL_CTX_use_certificate_file(m_ctx, certificate.data(), SSL_FILETYPE_PEM) <= 0) 
     {
-        auto msg = fmt::format("::SSL_CTX_use_certificate_file failed: {}", ossl_err_as_string());
+        auto msg = fmt::format("::SSL_CTX_use_certificate_file failed: {}", ssl_helper::ossl_err_as_string());
         throw_krypto_ex(msg);
     }
     /* set the private key from KeyFile (may be the same as CertFile) */
     if (::SSL_CTX_use_PrivateKey_file(m_ctx, key.data(), SSL_FILETYPE_PEM) <= 0) 
     {
-        auto msg = fmt::format("::SSL_CTX_use_PrivateKey_file failed: {}", ossl_err_as_string());
+        auto msg = fmt::format("::SSL_CTX_use_PrivateKey_file failed: {}", ssl_helper::ossl_err_as_string());
         throw_krypto_ex(msg);
     }
     /* verify private key */

@@ -73,7 +73,6 @@ KRYPTO_INLINE unsigned char *printable_to_network_format(const int domain,
 template<typename StreamBuffer>
 KRYPTO_INLINE size_t send(unique_socket &usocket, const StreamBuffer *data, size_t n_bytes, int flags = 0)
 {
-    static_assert(krypto::is_valid_buffer<StreamBuffer>::value, "StreamBuffer should be a valid buffer");
     int write_result = 0;
     size_t bytes_sent = 0;
 
@@ -102,8 +101,6 @@ KRYPTO_INLINE size_t send(unique_socket &usocket, const StreamBuffer *data, size
 template<typename StreamBuffer>
 KRYPTO_INLINE size_t recv(unique_socket &usocket, StreamBuffer *data, size_t n_bytes, int flags = 0)
 {
-    static_assert(krypto::is_valid_buffer<StreamBuffer>::value, "StreamBuffer should be a valid buffer");
-
     int recv_result = 0;
     size_t recv_bytes = 0;
 
