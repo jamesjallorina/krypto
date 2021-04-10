@@ -50,8 +50,9 @@ int main(int argc, char **argv)
     std::unique_ptr<client_handle> handle = 
                     std::make_unique<client_handle>(client->connect(hostname, port));
 
+    krypto::handshake(*handle);
     std::cout << handle->get_certificates() << std::endl;
-    
+  
     send_request(std::move(handle));
 
     return 0;

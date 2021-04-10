@@ -117,7 +117,7 @@ int main(int argc, char **argv)
             std::make_unique<krypto::server_handle> (
                                                     server->accept_connections()
                                                     );
-
+        krypto::handshake(*handle);
         response(std::move(handle));
     }
     return 0;
