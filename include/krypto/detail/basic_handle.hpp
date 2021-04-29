@@ -33,6 +33,7 @@ public:
     {
         if(m_ssl)
             state = true;
+        ::SSL_set_accept_state(m_ssl);
         m_socket = make_unique_socket(::SSL_get_fd(m_ssl));
     }
     
@@ -101,6 +102,7 @@ public:
     {
         if(m_ssl)
             state = true;
+        ::SSL_set_connect_state(m_ssl);
         m_socket = make_unique_socket(::SSL_get_fd(m_ssl));
     }
 

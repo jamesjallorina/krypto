@@ -30,8 +30,6 @@ class ssl_server
 
 */
 
-#define CIPHER_LIST "AES128-SHA"
-
 //references
 // https://stackoverflow.com/questions/11705815/client-and-server-communication-using-ssl-c-c-ssl-protocol-dont-works
 // http://simplestcodings.blogspot.com/2010/08/secure-server-client-using-openssl-in-c.html
