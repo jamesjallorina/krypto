@@ -51,7 +51,7 @@ public:
     ~ssl_client();
 
 public:
-    client_handle connect(
+    SSL *connect(
         std::string const &hostname,
         std::string const &port
         );
@@ -153,7 +153,7 @@ void ssl_client::load_certificate(
 }
 
 KRYPTO_INLINE
-client_handle ssl_client::connect(
+SSL *ssl_client::connect(
         std::string const &hostname,
         std::string const &port
     )
@@ -163,7 +163,7 @@ client_handle ssl_client::connect(
     client->connect(hostname.data(), port);
     ssl = ::SSL_new(m_ctx);
     ::SSL_set_fd(ssl, client->release());
-    return client_handle(ssl);
+    return ssl;
 }
 
 }   // namespace detail

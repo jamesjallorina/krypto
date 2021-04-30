@@ -47,8 +47,8 @@ public:
     ssl_server &operator=(ssl_server const & rhs) = delete;
 
 public:
-    server_handle accept_connections();
-    server_handle accept_connections(
+    SSL *accept_connections();
+    SSL *accept_connections(
         struct sockaddr_storage &their_addr, 
         socklen_t &sin_size);
     void run_listener(std::string const &port_number, const int no_of_connections);
@@ -123,7 +123,7 @@ void ssl_server::run_listener(std::string const &port_number,
 }
 
 KRYPTO_INLINE
-server_handle ssl_server::accept_connections()
+SSL *ssl_server::accept_connections()
 {
     struct sockaddr_storage addr = {0};
     socklen_t len = 0;
@@ -131,7 +131,7 @@ server_handle ssl_server::accept_connections()
 }
 
 KRYPTO_INLINE
-server_handle ssl_server::accept_connections(
+SSL *ssl_server::accept_connections(
     struct sockaddr_storage &their_addr, 
     socklen_t &sin_size)
 {
@@ -142,7 +142,7 @@ server_handle ssl_server::accept_connections(
 
     ssl = ::SSL_new(m_ctx);
     ::SSL_set_fd(ssl, client_socket.release());
-    return server_handle(ssl);
+    return ssl;
 }
 
 KRYPTO_INLINE 

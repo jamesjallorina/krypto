@@ -14,9 +14,9 @@ namespace detail {
 KRYPTO_INLINE
 void handshake(detail::basic_handle<false> &handle)
 {
-    if(::SSL_connect(handle.native_handle()) < 1)
+    if(::SSL_do_handshake(handle.native_handle()) < 1)
     {
-        auto msg = fmt::format("::SSL_connect failed {}", detail::ssl_helper::ossl_err_as_string());
+        auto msg = fmt::format("::SSL_do_handshake failed {}", detail::ssl_helper::ossl_err_as_string());
         throw_krypto_ex(msg);
     }
 }
