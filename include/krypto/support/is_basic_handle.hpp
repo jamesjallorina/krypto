@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <krypto/support/void_t.hpp>
+#include "void_t.hpp"
 
 #include <utility>
 

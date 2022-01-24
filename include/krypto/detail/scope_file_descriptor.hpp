@@ -1,4 +1,3 @@
-// Copyright (c) 2021-present cppnetwork
 // Copyright (c) 2021-present James Marjun Jallorinana
 // All Rights Reserved
 //
@@ -6,16 +5,15 @@
 
 #pragma once
 
-#include <krypto/common.hpp>
+#include "../../krypto/common.hpp"
 
 #include <unistd.h>
 #include <cassert>
 #include <utility>
 
-namespace krypto
-{
-namespace detail
-{
+namespace krypto {
+
+namespace detail {
 
 class scope_file_descriptor
 {
@@ -99,12 +97,11 @@ private:
     scope_file_descriptor &operator=(scope_file_descriptor const &) = delete;
 
 private:
-    int m_file_descriptor;
+    socket_type m_file_descriptor;
 
 };
-} // namespace detail
 
-using unique_socket = detail::scope_file_descriptor;
+using unique_socket = scope_file_descriptor;
 
 template <class...Ts>
 unique_socket make_unique_socket(Ts&&...ts)
@@ -112,4 +109,5 @@ unique_socket make_unique_socket(Ts&&...ts)
     return unique_socket(std::forward<Ts>(ts)...);
 }
 
+} // namespace detail
 } // namespace krypto

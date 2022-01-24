@@ -1,4 +1,3 @@
-// Copyright (c) 2021-present cppnetwork
 // Copyright (c) 2021-present James Marjun Jallorina
 // All Rights Reserved
 //
@@ -6,9 +5,9 @@
 
 #pragma once
 
-#include <krypto/detail/basic_handle.hpp>
-#include <krypto/detail/ssl_helper.hpp>
-#include <krypto/detail/tcp_server.hpp>
+#include "basic_handle.hpp"
+#include "ssl_helper.hpp"
+#include "tcp_server.hpp"
 
 namespace krypto
 {

@@ -13,5 +13,5 @@
 
 // enable the 'n' flag in for backward compatibility with fmt 6.x
 #define FMT_DEPRECATED_N_SPECIFIER
-#include <krypto/fmt/bundled/core.h>
-#include <krypto/fmt/bundled/format.h>
+#include "bundled/core.h"
+#include "bundled/format.h"

@@ -1,4 +1,3 @@
-// Copyright (c) 2021-present cppnetwork
 // Copyright (c) 2021-present James Marjun Jallorina
 // Copyright(c) 2015-present, Gabi Melman & spdlog contributors.
 // All Rights Reserved
@@ -7,7 +6,7 @@
 
 #pragma once
 
-#include <krypto/common.hpp>
+#include "krypto/common.hpp"
 
 #include <cstdio>
 #include <ctime>

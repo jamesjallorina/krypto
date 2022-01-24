@@ -7,11 +7,21 @@
 #ifndef INCLUDE_KRYPTO_HPP_
 #define INCLUDE_KRYPTO_HPP_
 
-#include <krypto/core.hpp>
+#include "core.hpp"
+
+#define KRYPTO_VERSION_MAJOR 1
+#define KRYPTO_VERSION_MINOR 0
+#define KRYPTO_VERSION_PATCH 0
 
 namespace krypto
 {
 // declare all public krpyto library APIs here
+
+/// @brief handle for ssl server
+using server_handle = detail::basic_handle<true>;
+
+/// @brief handle for ssl client
+using client_handle = detail::basic_handle<false>;
 
 void handshake(server_handle &handle)
 {

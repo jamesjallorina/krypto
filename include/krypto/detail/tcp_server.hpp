@@ -1,4 +1,3 @@
-// Copyright (c) 2021-present cppnetwork
 // Copyright (c) 2021-present James Marjun Jallorina
 // All Rights Reserved
 //
@@ -6,9 +5,9 @@
 
 #pragma once
 
-#include <krypto/detail/scope_file_descriptor.hpp>
-#include <krypto/detail/socket_helper.hpp>
-#include <krypto/fmt/fmt.hpp>
+#include "scope_file_descriptor.hpp"
+#include "socket_helper.hpp"
+#include "../fmt/fmt.hpp"
 
 namespace krypto
 {

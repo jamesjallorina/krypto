@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <krypto/fmt/fmt.hpp>
+#include "fmt/fmt.hpp"
 
 #include <string>
 #include <chrono>
@@ -40,6 +40,7 @@
 namespace krypto
 {
 
+using socket_type = int;
 using protocol = int;
 
 using log_clock = std::chrono::system_clock;

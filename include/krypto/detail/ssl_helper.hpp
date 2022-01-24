@@ -1,4 +1,3 @@
-// Copyright (c) 2021-present cppnetwork
 // Copyright (c) 2021-present James Marjun Jallorina
 // All Rights Reserved
 //
@@ -6,25 +5,19 @@
 
 #pragma once
 
-#include <krypto/common.hpp>
-#include <krypto/support/is_basic_handle.hpp>
-#include <krypto/detail/scope_file_descriptor.hpp>
-#include <krypto/fmt/fmt.hpp>
+#include "../common.hpp"
+#include "../fmt/fmt.hpp"
+#include "../support/is_basic_handle.hpp"
+#include "scope_file_descriptor.hpp"
 
 #include <type_traits>
 
-namespace krypto
-{
+namespace krypto {
 
-namespace detail{
+namespace detail {
 
 template<bool Serverhandle>
 class basic_handle;
-
-}
-
-namespace detail
-{
 
 namespace ssl_helper
 {

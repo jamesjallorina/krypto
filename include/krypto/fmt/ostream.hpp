@@ -10,4 +10,4 @@
 #define FMT_HEADER_ONLY
 #endif
 
-#include <krypto/fmt/bundled/ostream.h>
+#include "bundled/ostream.h"

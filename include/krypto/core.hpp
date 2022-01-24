@@ -6,13 +6,14 @@
 
 #pragma once
 
-#include <krypto/detail/scope_file_descriptor.hpp>
-#include <krypto/detail/scope_thread.hpp>
-#include <krypto/detail/tcp_client.hpp>
-#include <krypto/detail/tcp_server.hpp>
-#include <krypto/detail/ssl_server.hpp>
-#include <krypto/detail/ssl_client.hpp>
-#include <krypto/detail/basic_handle.hpp>
-#include <krypto/detail/ssl_helper.hpp>
-#include <krypto/detail/connector.hpp>
-#include <krypto/detail/acceptor.hpp>
+#include "detail/scope_file_descriptor.hpp"
+#include "detail/scope_thread.hpp"
+#include "detail/tcp_client.hpp"
+#include "detail/tcp_server.hpp"
+#include "detail/ssl_server.hpp"
+#include "detail/ssl_client.hpp"
+#include "detail/basic_handle.hpp"
+#include "detail/ssl_helper.hpp"
+#include "detail/connector.hpp"
+#include "detail/acceptor.hpp"
+#include "context.hpp"

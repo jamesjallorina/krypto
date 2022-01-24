@@ -1,4 +1,3 @@
-// Copyright (c) 2021-present cppnetwork
 // Copyright (c) 2021-present James Marjun Jallorina
 // All Rights Reserved
 //
@@ -6,7 +5,7 @@
 
 #pragma once
 
-#include <krypto/common.hpp>
+#include "../common.hpp"
 
 #include <thread>
 
@@ -100,8 +99,7 @@ private:
     thread_type m_thread_impl;
 };
 
+using unique_thread = scoped_thread<std::thread>;
+
 }   // namespace detail
-
-using unique_thread = detail::scoped_thread<std::thread>;
-
 }   // namespace krypto

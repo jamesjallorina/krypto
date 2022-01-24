@@ -1,4 +1,3 @@
-// Copyright (c) 2021-present cppnetwork
 // Copyright (c) 2021-present James Marjun Jallorina
 // All Rights Reserved
 //
@@ -6,7 +5,7 @@
 
 #pragma once
 
-#include <krypto/detail/basic_handle.hpp>
+#include "basic_handle.hpp"
 
 namespace krypto {
 namespace detail {
